@@ -7,16 +7,38 @@
 
 import SwiftUI
 
+
+
 struct ContentView: View {
+    @StateObject var viewModel = ViewModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            NavigationView {
+                List(viewModel.articles, id: \.self) { article in
+                    NavigationLink(destination: ArticleVIew(article: article)) {
+                        HStack {
+
+                            VStack(alignment: .leading) {
+                                Text(article.title)
+                                    .font(.headline)
+                                Text(article.description)
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                    }
+                }
+//                .navigationDestination(for: Article.self, destination: { article in
+//                    ArticleVIew(article: article)
+//                })
+                .navigationTitle("NewsExplorer")
+            }
+            
+            .onAppear {
+                viewModel.fetch()
+            }
         }
-        .padding()
-    }
+
 }
 
 struct ContentView_Previews: PreviewProvider {
