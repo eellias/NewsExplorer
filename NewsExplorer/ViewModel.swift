@@ -12,7 +12,6 @@ import SwiftUI
 
 class ViewModel: ObservableObject {
     
-    //let apiKey = "9a99da32061842ab832940886fbce64b"
     let apiKey = "2c6f41b8c92b4d90b278f468e1016138"
     let apiURL = "https://newsapi.org/v2/everything"
     var parameters: [String : String] = ["q":""]
@@ -30,10 +29,6 @@ class ViewModel: ObservableObject {
     
     func fetchData(query: String?, sortBy: String?, fromDate: String?, toDate: String?) {
         parameters["q"] = query
-        
-//        if let query = query {
-//            parameters["query"] = query
-//        }
         
         if let sortBy = sortBy {
             parameters["sortBy"] = sortBy
@@ -69,13 +64,10 @@ class ViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self?.articles = articlesList.articles
                 }
-                //print(articlesList)
             } catch {
                 print(error.localizedDescription)
             }
         }
-        
-        print(url)
         
         task.resume()
         
@@ -98,7 +90,4 @@ class ViewModel: ObservableObject {
         
         return url
     }
-    
-    
-    
 }
