@@ -5,23 +5,52 @@
 //  Created by Ilya Tovstokory on 11.06.2023.
 //
 
+
+
 import Foundation
 import SwiftUI
 
 class ViewModel: ObservableObject {
     
-    let apiKey = "9a99da32061842ab832940886fbce64b"
-    let apiURL = "https://newsapi.org/v2/everything?q=default&apiKey="
+    //let apiKey = "9a99da32061842ab832940886fbce64b"
+    let apiKey = "2c6f41b8c92b4d90b278f468e1016138"
+    let apiURL = "https://newsapi.org/v2/everything"
+    var parameters: [String : String] = ["q":""]
     
     @Published var articles: [Article] = []
     
-    func fetch() {
-        
-        guard let url = URL(string: apiURL + apiKey) else {
-            return
+    
+    
+    func clearByFields(fields: [String]) {
+        for field in fields {
+            parameters[field] = nil
         }
         
+    }
+    
+    func fetchData(query: String?, sortBy: String?, fromDate: String?, toDate: String?) {
+        parameters["q"] = query
         
+//        if let query = query {
+//            parameters["query"] = query
+//        }
+        
+        if let sortBy = sortBy {
+            parameters["sortBy"] = sortBy
+        }
+        
+        if let fromDate = fromDate {
+            parameters["from"] = fromDate
+        }
+        if let toDate = toDate {
+            parameters["to"] = toDate
+        }
+        
+        let queryParams = getParams()
+        
+        guard let url = URL(string: "\(apiURL)\(queryParams)&apiKey=\(apiKey)") else {
+            return
+        }
         
         let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
             guard let data = data, error == nil else {
@@ -40,14 +69,36 @@ class ViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self?.articles = articlesList.articles
                 }
-                print(articlesList)
+                //print(articlesList)
             } catch {
                 print(error.localizedDescription)
             }
         }
         
+        print(url)
+        
         task.resume()
+        
     }
+    
+    func getParams() -> String {
+        var url: String = "?q=\(parameters["q"] ?? "default")"
+        
+        if parameters["sortBy"] != nil {
+            url += "&sortBy=" + (parameters["sortBy"] ?? "")
+        }
+        
+        if parameters["from"] != nil {
+            url += "&from=" + (parameters["from"] ?? "")
+        }
+        
+        if parameters["to"] != nil {
+            url += "&to=" + (parameters["to"] ?? "")
+        }
+        
+        return url
+    }
+    
     
     
 }
